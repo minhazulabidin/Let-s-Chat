@@ -1,12 +1,70 @@
-import React from 'react'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import React, { useState } from 'react'
 import { Link } from 'react-router'
+import auth from '../../firebase.config'
 
 const SignIn = () => {
+    const [infos, setInfos] = useState({
+        email: "",
+        password: ""
+    })
+    const [error, setError] = useState({
+        email: "",
+        password: "",
+    })
+    const [loader, setLoader] = useState(false)
+
+    const handleInfo = e => {
+        let { name, value } = e.target
+        setError((prev) => ({
+            name: "",
+            email: "",
+            password: "",
+        }))
+        setInfos((prev) => ({
+            ...prev, [name]: value,
+        }))
+    }
+
+    const handleSignIn = e => {
+        e.preventDefault()
+
+        if (!infos.email) {
+            setError((prev) => ({
+                ...prev, email: "Email is Requird"
+            }))
+            return
+        } else if (!infos.password) {
+            setError((prev) => ({
+                ...prev, password: "Password is Requird"
+            }))
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(infos.email)) {
+            setError((prev) => ({
+                ...prev, email: "Write Proper Email"
+            }))
+            return;
+        }
+
+        signInWithEmailAndPassword(auth, infos.email, infos.password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                console.log(user)
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+            });
+    }
+
+
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
             <div className="grid md:grid-cols-2 items-center gap-4 max-md:gap-8 max-w-6xl max-md:max-w-lg w-full p-4 [box-shadow:0_2px_10px_-3px_rgba(6,81,237,0.3)] rounded-md">
                 <div className="md:max-w-md w-full px-4 py-4">
-                    <form>
+                    <form onSubmit={handleSignIn}>
                         <div className="mb-12">
                             <h1 className="text-slate-900 text-3xl font-bold">Sign in</h1>
                             <p className="text-[15px] mt-6 text-slate-600">
@@ -25,10 +83,11 @@ const SignIn = () => {
                             </label>
                             <div className="relative flex items-center">
                                 <input
+                                    onChange={handleInfo}
                                     name="email"
                                     type="text"
                                     required=""
-                                    className="w-full text-slate-900 text-sm border-b border-slate-300 focus:border-blue-600 pl-2 pr-8 py-3 outline-none"
+                                    className={`w-full text-slate-900 text-sm border-b ${error.email ? "border-red-500 placeholder:text-red-500" : "border-slate-300"} focus:border-blue-600 pl-2 pr-8 py-3 outline-none`}
                                     placeholder="Enter email"
                                 />
                                 <svg
@@ -68,10 +127,11 @@ const SignIn = () => {
                             </label>
                             <div className="relative flex items-center">
                                 <input
+                                    onChange={handleInfo}
                                     name="password"
                                     type="password"
                                     required=""
-                                    className="w-full text-slate-900 text-sm border-b border-slate-300 focus:border-blue-600 pl-2 pr-8 py-3 outline-none"
+                                    className={`w-full text-slate-900 text-sm border-b ${error.email ? "border-red-500 placeholder:text-red-500" : "border-slate-300"} focus:border-blue-600 pl-2 pr-8 py-3 outline-none`}
                                     placeholder="Enter password"
                                 />
                                 <svg
@@ -114,7 +174,7 @@ const SignIn = () => {
                         </div>
                         <div className="mt-12">
                             <button
-                                type="button"
+                                type="submit"
                                 className="w-full shadow-xl py-2.5 px-4 text-sm font-medium tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer"
                             >
                                 Sign in
