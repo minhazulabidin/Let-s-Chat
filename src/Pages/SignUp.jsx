@@ -36,20 +36,24 @@ const SignUp = () => {
             setError((prev) => ({
                 ...prev, name: "Name is Requird"
             }))
+            return
         } else if (!infos.email) {
             setError((prev) => ({
                 ...prev, email: "Email is Requird"
             }))
+            return
         } else if (!infos.password) {
             setError((prev) => ({
                 ...prev, password: "Password is Requird"
             }))
+            return;
         }
 
-        if (/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(infos.email)){
-              setError((prev) => ({
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(infos.email)) {
+            setError((prev) => ({
                 ...prev, email: "Write Proper Email"
             }))
+            return;
         }
 
         createUserWithEmailAndPassword(auth, infos?.email, infos?.password)
