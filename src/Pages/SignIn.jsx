@@ -28,7 +28,7 @@ const SignIn = () => {
 
     const handleSignIn = e => {
         e.preventDefault()
-
+        setLoader(true)
         if (!infos.email) {
             setError((prev) => ({
                 ...prev, email: "Email is Requird"
@@ -51,7 +51,7 @@ const SignIn = () => {
         signInWithEmailAndPassword(auth, infos.email, infos.password)
             .then((userCredential) => {
                 const user = userCredential.user;
-                console.log(user)
+                setLoader(false)
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -177,7 +177,8 @@ const SignIn = () => {
                                 type="submit"
                                 className="w-full shadow-xl py-2.5 px-4 text-sm font-medium tracking-wide rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer"
                             >
-                                Sign in
+
+                                {loader ? <span className="loading loading-spinner loading-lg"></span> : "Sign in"}
                             </button>
                         </div>
                         <div className="my-6 flex items-center gap-4">

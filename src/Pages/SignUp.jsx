@@ -31,7 +31,7 @@ const SignUp = () => {
 
     const handleSignUp = e => {
         e.preventDefault()
-
+        setLoader(true)
         if (!infos.name) {
             setError((prev) => ({
                 ...prev, name: "Name is Requird"
@@ -64,10 +64,9 @@ const SignUp = () => {
                     sendEmailVerification(auth.currentUser)
                         .then(() => {
                             toast.success('Verification Email Sent!!')
+                            setLoader(false)
                         });
                 })
-                console.log(userCredential)
-
             })
             .catch((error) => {
                 const errorCode = error.code;
@@ -225,7 +224,7 @@ const SignUp = () => {
                             type="submit"
                             className="w-full py-2.5 px-4 tracking-wider text-sm rounded-md text-white bg-slate-800 hover:bg-slate-900 focus:outline-none cursor-pointer"
                         >
-                            Create an account
+                            {loader ? <span className="loading loading-spinner loading-lg"></span> : "Create An Account"}
                         </button>
                     </div>
                     <p className="text-slate-600 text-sm mt-6 text-center">
