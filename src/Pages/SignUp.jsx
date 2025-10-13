@@ -1,8 +1,10 @@
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import auth from "../../firebase.config";
 import { useState } from "react";
 import { toast } from 'react-hot-toast'
+import { useDispatch } from "react-redux";
+import { userInfo } from "../Slices/userSlice";
 
 const SignUp = () => {
     const [infos, setInfos] = useState({
@@ -16,6 +18,8 @@ const SignUp = () => {
         password: "",
     })
     const [loader, setLoader] = useState(false)
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const handleInfo = e => {
         let { name, value } = e.target
@@ -64,7 +68,9 @@ const SignUp = () => {
                     sendEmailVerification(auth.currentUser)
                         .then(() => {
                             toast.success('Verification Email Sent!!')
+                            dispatch(userInfo(userCredential.user))
                             setLoader(false)
+                            navigate("/")
                         });
                 })
             })
