@@ -1,5 +1,5 @@
 import { signOut } from "firebase/auth";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import auth from "../../firebase.config";
 import { useDispatch } from "react-redux";
 import { userInfo } from "../Slices/userSlice";
@@ -8,11 +8,13 @@ import { userInfo } from "../Slices/userSlice";
 const Navbar = () => {
     const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
     const dispatch = useDispatch();
+    const navigate = useNavigate()
 
     const handleSignOut = () => {
         signOut(auth).then(() => {
             localStorage.removeItem("user")
             dispatch(userInfo(null))
+            navigate("/signin")
         }).catch((error) => {
             console.log(error.message)
         });
@@ -53,7 +55,7 @@ const Navbar = () => {
                                     <div className="w-10 rounded-full">
                                         <img
                                             alt="Tailwind CSS Navbar component"
-                                            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                                            src={user.photoURL} />
                                     </div>
                                 </div>
                                 <ul

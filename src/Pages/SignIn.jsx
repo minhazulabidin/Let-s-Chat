@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import auth from '../../firebase.config'
@@ -29,7 +29,8 @@ const SignIn = () => {
         }))
     }
     const navigate = useNavigate();
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+
 
     const handleSignIn = e => {
         e.preventDefault()
@@ -70,7 +71,22 @@ const SignIn = () => {
                 setLoader(false)
             });
     }
+    const handleGoogleLogIn = () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                const user = result.user;
+                localStorage.setItem("user", JSON.stringify(user))
+                dispatch(userInfo(user))
+                navigate("/")
+            }).catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                const email = error.customData.email;
+                const credential = GoogleAuthProvider.credentialFromError(error);
 
+            });
+    }
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center p-4">
@@ -199,7 +215,7 @@ const SignIn = () => {
                             <hr className="w-full border-slate-300" />
                         </div>
                         <div className="space-x-8 flex justify-center">
-                            <button type="button" className="border-0 outline-0 cursor-pointer">
+                            <button onClick={handleGoogleLogIn} type="button" className="border-0 outline-0 cursor-pointer">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     className="w-7 h-7 inline"
