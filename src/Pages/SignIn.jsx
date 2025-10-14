@@ -1,7 +1,10 @@
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import React, { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import auth from '../../firebase.config'
+import toast from 'react-hot-toast'
+import { useDispatch } from 'react-redux'
+import { userInfo } from '../Slices/userSlice'
 
 const SignIn = () => {
     const [infos, setInfos] = useState({
@@ -25,6 +28,8 @@ const SignIn = () => {
             ...prev, [name]: value,
         }))
     }
+    const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const handleSignIn = e => {
         e.preventDefault()
@@ -51,11 +56,18 @@ const SignIn = () => {
         signInWithEmailAndPassword(auth, infos.email, infos.password)
             .then((userCredential) => {
                 const user = userCredential.user;
+                localStorage.setItem("user", JSON.stringify(user))
+                toast.success("Login Successfuly")
                 setLoader(false)
+                setTimeout(() => {
+                    dispatch(userInfo(user))
+                    navigate("/")
+                }, 2000);
             })
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
+                setLoader(false)
             });
     }
 

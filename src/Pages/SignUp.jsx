@@ -69,10 +69,11 @@ const SignUp = () => {
                         .then(() => {
                             toast.success('Verification Email Sent!!')
                             localStorage.setItem("user", JSON.stringify(userCredential.user))
-                            dispatch(userInfo(userCredential.user))
-                            console.log(userCredential.user)
-                            setLoader(false)
-                            navigate("/")
+                            setTimeout(() => {
+                                dispatch(userInfo(userCredential.user))
+                                setLoader(false)
+                                navigate("/")
+                            }, 2000);
                         });
                 })
             })

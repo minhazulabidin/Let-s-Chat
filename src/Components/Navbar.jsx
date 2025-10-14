@@ -1,9 +1,23 @@
+import { signOut } from "firebase/auth";
 import { Link } from "react-router";
+import auth from "../../firebase.config";
+import { useDispatch } from "react-redux";
+import { userInfo } from "../Slices/userSlice";
 
 
 const Navbar = () => {
     const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+    const dispatch = useDispatch();
 
+    const handleSignOut = () => {
+        signOut(auth).then(() => {
+            localStorage.removeItem("user")
+            dispatch(userInfo(null))
+        }).catch((error) => {
+            console.log(error.message)
+        });
+
+    }
 
 
     return (
@@ -11,7 +25,7 @@ const Navbar = () => {
             <div className="bg-base-100 shadow-sm">
                 <div className='container mx-auto navbar'>
                     <div className="flex-1">
-                        <a className="btn btn-ghost text-xl">Let's Chat</a>
+                        <Link className="btn btn-ghost text-xl font-kaushan">Let's Chat</Link>
                     </div>
                     {
                         user ? <div className="flex-none">
@@ -46,13 +60,13 @@ const Navbar = () => {
                                     tabIndex="-1"
                                     className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                                     <li>
-                                        <a className="justify-between">
+                                        <Link className="justify-between">
                                             Profile
                                             <span className="badge">New</span>
-                                        </a>
+                                        </Link>
                                     </li>
-                                    <li><a>Settings</a></li>
-                                    <li><a>Logout</a></li>
+                                    <li><Link>Settings</Link></li>
+                                    <li><Link onClick={handleSignOut}>Logout</Link></li>
                                 </ul>
                             </div>
                         </div> : <Link className="ml-3 btn" to={"/signup"}>Sign Up</Link>

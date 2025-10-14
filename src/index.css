@@ -1,2 +1,7 @@
 @import "tailwindcss";
 @plugin "daisyui";
+@import url('https://fonts.googleapis.com/css2?family=Kaushan+Script&display=swap');
+
+@theme {
+  --font-kaushan: "Kaushan Script", cursive; 
+}
