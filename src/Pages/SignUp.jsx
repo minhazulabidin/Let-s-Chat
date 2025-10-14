@@ -68,7 +68,9 @@ const SignUp = () => {
                     sendEmailVerification(auth.currentUser)
                         .then(() => {
                             toast.success('Verification Email Sent!!')
+                            localStorage.setItem("user", JSON.stringify(userCredential.user))
                             dispatch(userInfo(userCredential.user))
+                            console.log(userCredential.user)
                             setLoader(false)
                             navigate("/")
                         });
@@ -77,7 +79,7 @@ const SignUp = () => {
             .catch((error) => {
                 const errorCode = error.code;
                 const errorMessage = error.message;
-
+                setLoader(false)
             });
     }
 
