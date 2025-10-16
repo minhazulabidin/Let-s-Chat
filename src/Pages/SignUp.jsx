@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from 'react-hot-toast'
 import { useDispatch } from "react-redux";
 import { userInfo } from "../Slices/userSlice";
+import { getDatabase, ref, set } from "firebase/database";
 
 const SignUp = () => {
     const [infos, setInfos] = useState({
@@ -67,13 +68,23 @@ const SignUp = () => {
                 }).then(() => {
                     sendEmailVerification(auth.currentUser)
                         .then(() => {
+                            const user = userCredential.user;
                             toast.success('Verification Email Sent!!')
-                            localStorage.setItem("user", JSON.stringify(userCredential.user))
+                            localStorage.setItem("user", JSON.stringify(user))
+                            // send user database
+                            const db = getDatabase();
+                            set(ref(db, 'users/' + user?.uid), {
+                                username: user?.displayName,
+                                email: user?.email,
+                                image: user.photoURL
+                            });
+
+
                             setTimeout(() => {
                                 dispatch(userInfo(userCredential.user))
                                 setLoader(false)
                                 navigate("/")
-                            }, 2000);
+                            }, 1000);
                         });
                 })
             })

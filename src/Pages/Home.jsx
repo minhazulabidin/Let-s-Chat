@@ -6,7 +6,7 @@ const Home = () => {
 
   return (
     <div>
-      <h1>{data?.displayName}</h1>
+
     </div>
   )
 }
