@@ -5,6 +5,7 @@ import auth from '../../firebase.config'
 import toast from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
 import { userInfo } from '../Slices/userSlice'
+import { getDatabase, ref, set } from 'firebase/database'
 
 const SignIn = () => {
     const [infos, setInfos] = useState({
@@ -75,8 +76,14 @@ const SignIn = () => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider)
             .then((result) => {
+                const db = getDatabase();
                 const user = result.user;
                 localStorage.setItem("user", JSON.stringify(user))
+                set(ref(db, 'users/' + user?.uid), {
+                    username: user?.displayName,
+                    email: user?.email,
+                    image: user.photoURL
+                });
                 dispatch(userInfo(user))
                 navigate("/")
             }).catch((error) => {

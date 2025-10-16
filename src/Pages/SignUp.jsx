@@ -78,8 +78,6 @@ const SignUp = () => {
                                 email: user?.email,
                                 image: user.photoURL
                             });
-
-
                             setTimeout(() => {
                                 dispatch(userInfo(userCredential.user))
                                 setLoader(false)
