@@ -7,7 +7,7 @@ import { FaHome } from "react-icons/fa";
 import { IoMdLogOut } from "react-icons/io";
 import { IoPersonCircle } from "react-icons/io5";
 import { MdMessage } from "react-icons/md";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 const Navbar = () => {
     const user = localStorage.getItem("user")
@@ -40,12 +40,16 @@ const Navbar = () => {
         if (item.action === "logout") {
             handleSignOut();
         } else if (item.action === "profile") {
-            modalRef.current?.showModal(); // open modal
+            modalRef.current?.showModal();
         } else if (item.path) {
             navigate(item.path);
         }
     };
 
+    const closeModal = () => {
+        modalRef.current?.close();
+        setActive("home");
+    };
     return (
         <>
             {/* Bottom Navbar */}
@@ -63,13 +67,26 @@ const Navbar = () => {
                 ))}
             </div>
 
-            {/* DaisyUI Modal */}
-            <dialog id="profile_modal" ref={modalRef} className="modal">
-                <div className="modal-box">
-                    <div className="flex flex-col items-center text-center space-y-3">
-                        <img src={user?.photoURL} className="w-[60px] h-[60px] rounded-full" alt="" />
+            {/* Profile Modal */}
+            <dialog ref={modalRef} id="profile_modal" className="modal">
+                <div className="modal-box relative">
+                    {/* Close button */}
+                    <button
+                        onClick={closeModal}
+                        className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl"
+                    >
+                        ✕
+                    </button>
+
+                    {/* Profile content */}
+                    <div className="flex flex-col items-center text-center space-y-3 mt-2">
+                        <img
+                            src={user?.photoURL || "https://via.placeholder.com/60"}
+                            alt="Profile"
+                            className="w-[60px] h-[60px] rounded-full object-cover"
+                        />
                         <h2 className="text-lg font-semibold">{user?.displayName || "User Name"}</h2>
-                        <p className="text-sm text-gray-600 mb-4">{user?.email || "user@email.com"}</p>
+                        <p className="text-sm text-gray-600">{user?.email || "user@email.com"}</p>
                     </div>
                 </div>
             </dialog>
