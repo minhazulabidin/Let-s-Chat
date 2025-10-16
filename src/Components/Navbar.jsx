@@ -1,74 +1,80 @@
 import { signOut } from "firebase/auth";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import auth from "../../firebase.config";
 import { useDispatch } from "react-redux";
 import { userInfo } from "../Slices/userSlice";
-
+import { FaHome } from "react-icons/fa";
+import { IoMdLogOut } from "react-icons/io";
+import { IoPersonCircle } from "react-icons/io5";
+import { MdMessage } from "react-icons/md";
+import { useState, useRef, useEffect } from "react";
 
 const Navbar = () => {
-    const user = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+    const user = localStorage.getItem("user")
+        ? JSON.parse(localStorage.getItem("user"))
+        : null;
     const dispatch = useDispatch();
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const [active, setActive] = useState("home");
+    const modalRef = useRef(null);
+
+    const navItems = [
+        { id: "home", icon: <FaHome size={22} />, label: "Home", path: "/" },
+        { id: "messages", icon: <MdMessage size={22} />, label: "Messages", path: "/messages" },
+        { id: "profile", icon: <IoPersonCircle size={24} />, label: "Profile", action: "profile" },
+        { id: "logout", icon: <IoMdLogOut size={22} />, label: "Logout", action: "logout" },
+    ];
 
     const handleSignOut = () => {
-        signOut(auth).then(() => {
-            localStorage.removeItem("user")
-            dispatch(userInfo(null))
-            navigate("/signin")
-        }).catch((error) => {
-            
-        });
+        signOut(auth)
+            .then(() => {
+                localStorage.removeItem("user");
+                dispatch(userInfo(null));
+                navigate("/signin");
+            })
+            .catch((error) => console.error("Sign out error:", error));
+    };
 
-    }
+    const handleClick = (item) => {
+        setActive(item.id);
+        if (item.action === "logout") {
+            handleSignOut();
+        } else if (item.action === "profile") {
+            modalRef.current?.showModal(); // open modal
+        } else if (item.path) {
+            navigate(item.path);
+        }
+    };
+
     return (
-        <div className=''>
-            <div className="bg-base-100 shadow-sm">
-                <div className='container mx-auto navbar'>
-                    <div className="flex-1">
-                        <Link className="btn btn-ghost text-xl font-kaushan">Let's Chat</Link>
-                    </div>
-                    {
-                        user ? <div className="flex-none">
-                            <div className="dropdown dropdown-end">
-                                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
-                                    <div className="indicator">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /> </svg>
-                                        <span className="badge badge-sm indicator-item">8</span>
-                                    </div>
-                                </div>
-                                <div
-                                    tabIndex={0}
-                                    className="card card-compact dropdown-content bg-base-100 z-1 mt-3 w-52 shadow">
-
-                                </div>
-                            </div>
-                            <div className="dropdown dropdown-end">
-                                <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                                    <div className="w-10 rounded-full">
-                                        <img
-                                            alt="Tailwind CSS Navbar component"
-                                            src={user.photoURL} />
-                                    </div>
-                                </div>
-                                <ul
-                                    tabIndex="-1"
-                                    className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
-                                    <li>
-                                        <Link className="justify-between">
-                                            Profile
-                                            <span className="badge">New</span>
-                                        </Link>
-                                    </li>
-                                    <li><Link>Settings</Link></li>
-                                    <li><Link onClick={handleSignOut}>Logout</Link></li>
-                                </ul>
-                            </div>
-                        </div> : <Link className="ml-3 btn" to={"/signup"}>Sign Up</Link>
-                    }
-                </div>
+        <>
+            {/* Bottom Navbar */}
+            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 bg-base-200 rounded-2xl shadow-lg px-4 py-2 flex gap-6 justify-center items-center z-50">
+                {navItems.map((item) => (
+                    <button
+                        key={item.id}
+                        onClick={() => handleClick(item)}
+                        className={`flex flex-col items-center text-sm ${active === item.id ? "text-primary" : "text-gray-500"
+                            } hover:text-primary transition`}
+                    >
+                        {item.icon}
+                        <span className="text-xs">{item.label}</span>
+                    </button>
+                ))}
             </div>
-        </div>
-    )
-}
 
-export default Navbar
+            {/* DaisyUI Modal */}
+            <dialog id="profile_modal" ref={modalRef} className="modal">
+                <div className="modal-box">
+                    <div className="flex flex-col items-center text-center space-y-3">
+                        <img src={user?.photoURL} className="w-[60px] h-[60px] rounded-full" alt="" />
+                        <h2 className="text-lg font-semibold">{user?.displayName || "User Name"}</h2>
+                        <p className="text-sm text-gray-600 mb-4">{user?.email || "user@email.com"}</p>
+                    </div>
+                </div>
+            </dialog>
+        </>
+    );
+};
+
+export default Navbar;
