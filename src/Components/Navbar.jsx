@@ -8,6 +8,7 @@ import { IoMdLogOut } from "react-icons/io";
 import { IoPersonCircle } from "react-icons/io5";
 import { MdMessage } from "react-icons/md";
 import { useState, useRef } from "react";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
     const user = localStorage.getItem("user")
@@ -26,13 +27,25 @@ const Navbar = () => {
     ];
 
     const handleSignOut = () => {
-        signOut(auth)
-            .then(() => {
-                localStorage.removeItem("user");
-                dispatch(userInfo(null));
-                navigate("/signin");
-            })
-            .catch((error) => console.error("Sign out error:", error));
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You want to log out?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Log Out!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                signOut(auth)
+                    .then(() => {
+                        localStorage.removeItem("user");
+                        dispatch(userInfo(null));
+                        navigate("/signin");
+                    })
+                    .catch((error) => console.error("Sign out error:", error));
+            }
+        });
     };
 
     const handleClick = (item) => {
