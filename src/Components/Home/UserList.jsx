@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 const UserList = () => {
     const db = getDatabase();
     const [userList, setUserList] = useState([]);
+    const [friendId, setFriendId] = useState([])
     let user = useSelector((state) => state?.userSlice?.user);
 
     useEffect(() => {
@@ -20,6 +21,16 @@ const UserList = () => {
         });
     }, []);
 
+    useEffect(() => {
+        const frdRef = ref(db, "FriendRequest/")
+        onValue(frdRef, (snapshot) => {
+            let array = [];
+            snapshot.forEach((item) => {
+                array.push(item.val().senderId + item.val().receiverId)
+            })
+            setFriendId(array)
+        })
+    }, [])
 
     const handleFrdReq = (item) => {
         const db = getDatabase();
@@ -64,12 +75,17 @@ const UserList = () => {
                             </div>
                         </div>
 
-                        <button
-                            onClick={() => handleFrdReq(item)}
-                            className="bg-teal-600 cursor-pointer text-white px-5 py-2 rounded-lg "
-                        >
-                            Add
-                        </button>
+                        {friendId.includes(user.uid + item.id) ||
+                            friendId.includes(item.id + user.uid) ? (
+                            <button class="bg-teal-600 cursor-pointer text-white px-5 py-2 rounded-lg ">Cancel</button>
+                        ) : (
+                            <button
+                                onClick={() => handleFrdReq(item)}
+                                class="bg-teal-600 cursor-pointer text-white px-5 py-2 rounded-lg "
+                            >
+                                Add
+                            </button>
+                        )}
                     </li>
                 ))}
             </ul>

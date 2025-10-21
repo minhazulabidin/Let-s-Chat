@@ -44,19 +44,15 @@ const FriendRequest = () => {
                                     className="h-10 w-10 rounded-full object-cover ring-1 ring-gray-200"
                                 />
                             <div className="min-w-0">
-                                <p className="text-sm font-medium text-gray-900">
-                                    {item?.userame}
-                                </p>
                                 <p className="truncate text-lg text-gray-500">{item?.senderName}</p>
                                 <p className="truncate text-xs text-gray-500">{item?.senderEmail}</p>
                             </div>
                         </div>
 
                         <button
-                            onClick={() => handleFrdReq(item)}
                             className="bg-teal-600 cursor-pointer text-white px-5 py-2 rounded-lg "
                         >
-                            Add
+                            Conform
                         </button>
                     </li>
                 ))}
