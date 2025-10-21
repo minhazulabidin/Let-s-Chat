@@ -24,7 +24,7 @@ const SignUp = () => {
 
     const handleInfo = e => {
         let { name, value } = e.target
-        setError((prev) => ({
+        setError(() => ({
             name: "",
             email: "",
             password: "",
@@ -86,9 +86,14 @@ const SignUp = () => {
                         });
                 })
             })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
+            .catch((err) => {
+                const errorCode = err.code;
+                const errorMessage = err.message;
+                if (errorMessage == "Firebase: Error (auth/email-already-in-use)." || errorCode == "auth/email-already-in-use") {
+                    setError((prev) => ({
+                        ...prev, email: "Email Already Used"
+                    }))
+                }
                 setLoader(false)
             });
     }
@@ -188,6 +193,7 @@ const SignUp = () => {
                                     </g>
                                 </svg>
                             </div>
+                            {error.email ? <p className="text-red-500 mt-2 ml-2 text-sm">{error.email}</p> : ""}
                         </div>
                         <div>
                             <label className="text-slate-900 text-sm font-medium mb-2 block">
