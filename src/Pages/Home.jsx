@@ -1,13 +1,14 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
-import UserList from '../Components/Home/userList'
+import FriendRequest from '../Components/Home/FriendRequest';
+import UserList from './../Components/Home/UserList';
 
 const Home = () => {
-  const data = useSelector((state) => state?.userSlice?.user)
 
   return (
-    <div>
-      <UserList/>
+    <div className='container mx-auto'>
+      <div className='grid grid-cols-3 gap-3'>
+        <UserList />
+        <FriendRequest/>
+      </div>
     </div>
   )
 }
