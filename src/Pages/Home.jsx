@@ -5,7 +5,7 @@ const Home = () => {
 
   return (
     <div className='container mx-auto'>
-      <div className='grid grid-cols-3 gap-3'>
+      <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3'>
         <UserList />
         <FriendRequest/>
       </div>
