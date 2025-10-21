@@ -1,4 +1,4 @@
-import { getDatabase, onValue, ref, set } from "firebase/database";
+import { getDatabase, onValue, push, ref, set } from "firebase/database";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
@@ -7,13 +7,12 @@ const UserList = () => {
     const [userList, setUserList] = useState([]);
     let user = useSelector((state) => state?.userSlice?.user);
 
-
     useEffect(() => {
         const userRef = ref(db, "users/");
         onValue(userRef, (snapshot) => {
             let array = [];
             snapshot.forEach((item) => {
-                if (item.key != user?.user?.uid) {
+                if (item.key != user?.uid) {
                     array.push({ ...item.val(), id: item.key });
                 }
             });
@@ -24,7 +23,7 @@ const UserList = () => {
 
     const handleFrdReq = (item) => {
         const db = getDatabase();
-        set(ref(db, "FriendRequest/"), {
+        set(push(ref(db, "FriendRequest/")), {
             senderId: user?.uid,
             senderName: user?.displayName,
             senderEmail: user?.email,
@@ -48,29 +47,20 @@ const UserList = () => {
                 className="divide-y divide-gray-100 overflow-y-auto h-[calc(420px-84px)]"
             >
                 {userList.map((item) => (
+
                     <li
                         key={item.idx}
                         className="flex items-center justify-between gap-x-4 px-5 py-4 transition-all duration-200 "
                     >
                         <div className="flex items-center gap-x-4">
-                            {user?.image ? (
-                                <img
-                                    src={item?.image}
-                                    alt={item?.username}
-                                    className="h-10 w-10 rounded-full object-cover ring-1 ring-gray-200"
-                                />
-                            ) : (
-                                <img
-                                    src="https://picsum.photos/seed/picsum/200/300"
-                                    alt={item?.username}
-                                    className="h-10 w-10 rounded-full object-cover ring-1 ring-gray-200"
-                                />
-                            )}
+                            <img
+                                src={user?.photoURL ? user?.photoURL : "https://picsum.photos/seed/picsum/200/300"}
+                                alt={item?.username}
+                                className="h-10 w-10 rounded-full object-cover ring-1 ring-gray-200"
+                            />
                             <div className="min-w-0">
-                                <p className="text-sm font-medium text-gray-900">
-                                    {item?.userame}
-                                </p>
-                                <p className="truncate text-xs text-gray-500">{item?.username}</p>
+                                <p className="truncate text-lg text-gray-500">{item?.username}</p>
+                                <p className="truncate text-xs text-gray-500">{item?.email}</p>
                             </div>
                         </div>
 

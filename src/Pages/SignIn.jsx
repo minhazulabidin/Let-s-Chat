@@ -59,7 +59,7 @@ const SignIn = () => {
             .then((userCredential) => {
                 const user = userCredential.user;
                 localStorage.setItem("user", JSON.stringify(user))
-                toast.success("Login Successfuly")
+                toast.success("Login Successfully")
                 setLoader(false)
                 setTimeout(() => {
                     dispatch(userInfo(user))
@@ -82,7 +82,7 @@ const SignIn = () => {
                 set(ref(db, 'users/' + user?.uid), {
                     username: user?.displayName,
                     email: user?.email,
-                    image: user.photoURL
+                    image: user?.photoURL
                 });
                 dispatch(userInfo(user))
                 navigate("/")
