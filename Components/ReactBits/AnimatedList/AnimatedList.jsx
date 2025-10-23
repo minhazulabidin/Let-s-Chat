@@ -9,9 +9,8 @@ const AnimatedList = ({
 }) => {
     return (
         <div
-            className={`relative w-full ${
-                displayScrollbar ? "overflow-y-auto" : "overflow-hidden"
-            }`}
+            className={`relative w-full ${displayScrollbar ? "overflow-y-auto" : "overflow-hidden"
+                }`}
         >
             {showGradients && (
                 <>
@@ -24,9 +23,9 @@ const AnimatedList = ({
                 {items.map((item, index) => (
                     <motion.div
                         key={item?.id || index}
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
+                        exit={{ opacity: 0, y: -8 }}
                         transition={{ duration: 0.2, delay: index * 0.03 }}
                     >
                         {renderItem ? (

@@ -1,5 +1,6 @@
 import FriendRequest from '../Components/Home/FriendRequest';
-import UserList from './../Components/Home/UserList';
+import UserList from '../Components/Home/userList';
+
 
 const Home = () => {
 

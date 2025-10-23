@@ -55,7 +55,7 @@ const UserList = () => {
                 <h2 className="text-lg font-semibold text-gray-900">User List</h2>
             </div>
 
-            <div className="overflow-y-auto max-h-[350px]">
+            <div className="overflow-y-auto h-full pb-15">
                 <AnimatedList
                     items={userList}
                     showGradients={true}
@@ -86,7 +86,7 @@ const UserList = () => {
                             </div>
 
                             {friendId.includes(user.uid + item.id) ||
-                            friendId.includes(item.id + user.uid) ? (
+                                friendId.includes(item.id + user.uid) ? (
                                 <button className="bg-gray-400 text-white px-5 py-2 rounded-lg cursor-not-allowed">
                                     Sent
                                 </button>
