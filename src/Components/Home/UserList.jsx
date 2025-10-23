@@ -6,7 +6,8 @@ import AnimatedList from "../../../Components/ReactBits/AnimatedList/AnimatedLis
 const UserList = () => {
     const db = getDatabase();
     const [userList, setUserList] = useState([]);
-    const [friendId, setFriendId] = useState([]);
+    const [friendReqId, setfriendReqId] = useState([]);
+    const [friendId, setfriendId] = useState([]);
     const user = useSelector((state) => state?.userSlice?.user);
 
     // Fetch user list
@@ -25,15 +26,29 @@ const UserList = () => {
 
     // Fetch friend requests
     useEffect(() => {
-        const frdRef = ref(db, "FriendRequest/");
+        const frdReqRef = ref(db, "FriendRequest/");
+        onValue(frdReqRef, (snapshot) => {
+            const array = [];
+            snapshot.forEach((item) => {
+                array.push(item.val().senderId + item.val().receiverId);
+            });
+            setfriendReqId(array);
+        });
+    }, [db]);
+
+    // Fetch Fiend request accept
+
+    useEffect(() => {
+        const frdRef = ref(db, "friendList/");
         onValue(frdRef, (snapshot) => {
             const array = [];
             snapshot.forEach((item) => {
                 array.push(item.val().senderId + item.val().receiverId);
             });
-            setFriendId(array);
-        });
-    }, [db]);
+            setfriendId(array)
+        })
+    }, [])
+
 
     // Send friend request
     const handleFrdReq = (item) => {
@@ -60,7 +75,7 @@ const UserList = () => {
                     items={userList}
                     showGradients={true}
                     enableArrowNavigation={true}
-                    // displayScrollbar={true}
+                    displayScrollbar={true}
                     renderItem={(item) => (
                         <div
                             key={item?.id}
@@ -85,15 +100,15 @@ const UserList = () => {
                                 </div>
                             </div>
 
-                            {friendId.includes(user.uid + item.id) ||
-                                friendId.includes(item.id + user.uid) ? (
-                                <button className="bg-gray-400 text-white px-5 py-2 rounded-lg cursor-not-allowed">
-                                    Sent
-                                </button>
+                            {friendReqId.includes(user.uid + item.id) ||
+                                friendReqId.includes(item.id + user.uid) ? (
+                                <p className="bg-gray-400 text-white px-2 text-xs py-2 rounded-lg cursor-not-allowed">
+                                   Req Sent
+                                </p>
                             ) : (
                                 <button
                                     onClick={() => handleFrdReq(item)}
-                                    className="bg-teal-600 cursor-pointer text-white px-5 py-2 rounded-lg hover:bg-teal-700 transition-all duration-200"
+                                    className="bg-blue-600 cursor-pointer text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-all duration-200"
                                 >
                                     Add
                                 </button>
