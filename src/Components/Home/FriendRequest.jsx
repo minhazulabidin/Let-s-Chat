@@ -38,6 +38,11 @@ const FriendRequest = () => {
             </div>
 
             <div className="overflow-y-auto max-h-[350px] pb-18">
+
+        {
+            
+        }
+
                 <AnimatedList
                     items={frdReq}
                     showGradients={true}

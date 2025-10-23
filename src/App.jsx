@@ -4,6 +4,7 @@ import RootLayout from './Layouts/RootLayout';
 import SignUp from './Pages/SignUp';
 import SignIn from './Pages/SignIn';
 import { Toaster } from 'react-hot-toast';
+import Message from './Pages/Message';
 
 const App = () => {
 
@@ -13,6 +14,7 @@ const App = () => {
       Component: RootLayout,
       children: [
         { index: true, Component: Home },
+        { path: "message", Component: Message },
       ],
     },
     {

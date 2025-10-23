@@ -37,8 +37,8 @@ const Navbar = () => {
       icon: <MdMessage size={20} />,
       label: "Messages",
       onClick: () => {
-        setActive("messages");
-        navigate("/messages");
+        setActive("message");
+        navigate("/message");
       },
     },
     {
