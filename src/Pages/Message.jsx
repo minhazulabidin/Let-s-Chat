@@ -1,11 +1,38 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidebar from '../Components/Message/Sidebar'
 import { useSelector } from 'react-redux'
 import img from "../assets/message.png"
 import { IoIosLock } from "react-icons/io";
+import { getDatabase, push, ref, set } from 'firebase/database';
 
 const Message = () => {
+    const [msg, setMsg] = useState("")
     const selectUser = useSelector(state => state.MessageSlice.user)
+    const user = useSelector(state => state.userSlice.user)
+    const db = getDatabase()
+
+    const handleText = (e) => {
+        setMsg(e.target.value)
+    }
+
+    const handleSentMsg = () => {
+        set(push(ref(db, "msglist/")), {
+            senderName: user.displayName,
+            senderEmail: user.email,
+            senderId: user.uid,
+            receiverName: selectUser.name,
+            receiverEmail: selectUser.email,
+            receiverId: selectUser.id,
+            senderPhoto: user.photoURL,
+            msg: msg,
+            time: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDay()}-${new Date().getHours()}-${new Date().getMinutes()}-${new Date().getSeconds()}`
+        }).then(() => {
+            setMsg("")
+        })
+    }
+
+
+
 
     return (
         <>
@@ -57,14 +84,15 @@ const Message = () => {
                             </div>
                         </div>
                         {/* Chat Input */}
-                        <footer className="bg-white border-t border-gray-300 p-4 absolute bottom-0 w-3/4">
+                        <footer className="bg-white border-t border-gray-300 p-4 absolute bottom-16 w-3/4">
                             <div className="flex items-center">
                                 <input
+                                    onChange={handleText}
                                     type="text"
                                     placeholder="Type a message..."
                                     className="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"
                                 />
-                                <button className="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2">
+                                <button onClick={handleSentMsg} className="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2">
                                     Send
                                 </button>
                             </div>
@@ -74,7 +102,7 @@ const Message = () => {
                         <div className='flex flex-col justify-center items-center w-full'>
                             <img className='rounded mb-3' src={img} alt="" />
                             <h2 className='text-xl font-bold'>Make calls, share your screen and get a faster experience.</h2>
-                            <p className='text-sm mt-3 flex items-center justify-center gap-1g'><IoIosLock />Your personal messages are end-to-end encrypted</p>
+                            <p className='text-sm mt-3 flex items-center justify-center gap-1'><IoIosLock />Your personal messages are end-to-end encrypted</p>
                         </div>
                 }
             </div>

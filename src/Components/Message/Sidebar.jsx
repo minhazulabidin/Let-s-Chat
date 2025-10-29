@@ -6,8 +6,10 @@ import { selectUser } from '../../Slices/messageSlice';
 const Sidebar = () => {
     const [friend, setFriend] = useState([])
     const user = useSelector((state) => state?.userSlice?.user);
+    const selectedUser = useSelector(state => state.MessageSlice.user)
     const db = getDatabase()
     const dispatch = useDispatch()
+
 
 
     useEffect(() => {
@@ -41,7 +43,7 @@ const Sidebar = () => {
             <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
                 {
                     friend.map(item => (
-                        <div onClick={() => handleSelect(item)} className="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md">
+                        <div onClick={() => handleSelect(item)} className={`flex items-center mb-4 cursor-pointer hover:bg-green-400 p-2 rounded-md ${item.senderId == selectedUser?.id || item.receiverId == selectedUser?.id ? "bg-green-600" : ""}`}>
                             <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
                                 <img
                                     src={user.uid == item.senderId ? item.receiverPhoto : item?.senderPhoto}
