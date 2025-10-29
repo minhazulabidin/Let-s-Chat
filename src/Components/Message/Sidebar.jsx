@@ -1,11 +1,13 @@
 import { getDatabase, onValue, ref } from 'firebase/database';
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectUser } from '../../Slices/messageSlice';
 
 const Sidebar = () => {
     const [friend, setFriend] = useState([])
     const user = useSelector((state) => state?.userSlice?.user);
     const db = getDatabase()
+    const dispatch = useDispatch()
 
 
     useEffect(() => {
@@ -20,7 +22,14 @@ const Sidebar = () => {
             setFriend(array)
         })
     }, [])
-    console.log(friend)
+
+    const handleSelect = item => {
+        if (user.uid == item.senderId) {
+            dispatch(selectUser({ name: item.receiverName, email: item.receiverEmail, id: item.receiverId, photo: item.receiverPhoto }))
+        } else {
+            dispatch(selectUser({ name: item.senderName, email: item.senderEmail, id: item.senderId, photo: item.senderPhoto }))
+        }
+    }
 
     return (
         <div className="w-1/4 bg-white border-r border-gray-300">
@@ -32,7 +41,7 @@ const Sidebar = () => {
             <div className="overflow-y-auto h-screen p-3 mb-9 pb-20">
                 {
                     friend.map(item => (
-                        <div className="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md">
+                        <div onClick={() => handleSelect(item)} className="flex items-center mb-4 cursor-pointer hover:bg-gray-100 p-2 rounded-md">
                             <div className="w-12 h-12 bg-gray-300 rounded-full mr-3">
                                 <img
                                     src={user.uid == item.senderId ? item.receiverPhoto : item?.senderPhoto}

@@ -88,7 +88,7 @@ const Navbar = () => {
   return (
     <>
       {/* ✅ Dock = Main Navbar */}
-      <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
+      <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-50">
         <Dock
           items={items.map((item) => ({
             ...item,
