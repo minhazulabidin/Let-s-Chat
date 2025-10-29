@@ -23,10 +23,11 @@ const Message = () => {
             senderName: user.displayName,
             senderEmail: user.email,
             senderId: user.uid,
+            senderPhoto: user.photoURL,
             receiverName: selectUser.name,
             receiverEmail: selectUser.email,
             receiverId: selectUser.id,
-            senderPhoto: user.photoURL,
+            receiverPhoto: selectUser.photo,
             msg: msg,
             time: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDay()}-${new Date().getHours()}-${new Date().getMinutes()}-${new Date().getSeconds()}`
         }).then(() => {
@@ -80,7 +81,7 @@ const Message = () => {
                                             </div>
                                             <div className="w-9 h-9 rounded-full flex items-center justify-center ml-2">
                                                 <img
-                                                    src={item.photo}
+                                                    src={item?.senderPhoto}
                                                     alt="My Avatar"
                                                     className="w-8 h-8 rounded-full"
                                                 />
@@ -90,7 +91,7 @@ const Message = () => {
                                         <div className="flex mb-4 cursor-pointer">
                                             <div className="w-9 h-9 rounded-full flex items-center justify-center mr-2">
                                                 <img
-                                                    src={item.photo}
+                                                    src={item?.receiverPhoto}
                                                     alt="User Avatar"
                                                     className="w-8 h-8 rounded-full"
                                                 />
