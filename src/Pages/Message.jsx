@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../Components/Message/Sidebar'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import img from "../assets/message.png"
 import { IoIosLock } from "react-icons/io";
-import { getDatabase, onValue, push, ref, set } from 'firebase/database';
+import { getDatabase, onValue, push, ref, remove, set } from 'firebase/database';
+import { selectU } from '../Slices/selectUser';
 
 const Message = () => {
     const [msg, setMsg] = useState("")
     const [msgList, setMsgList] = useState([])
+    const dispatch = useDispatch();
     const selectUser = useSelector(state => state.MessageSlice.user)
+    const selectUs = useSelector(state => state?.selectUserSlice?.selectU)
     const user = useSelector(state => state.userSlice.user)
     const db = getDatabase()
 
     const handleText = (e) => {
         setMsg(e.target.value)
     }
-
 
     // message sent
     const handleSentMsg = () => {
@@ -46,9 +48,32 @@ const Message = () => {
             })
             setMsgList(arr)
         })
-    }, [selectUser])
+    }, [selectUser,selectU])
 
-    console.log(msgList)
+    const handleBlock = () => {
+        if (user.uid == selectU.senderId) {
+            set(push(ref(db, "blockList/")), {
+                blockById: user.uid,
+                blockBy: user.displayName,
+                blockedUser: selectUs.receiverName,
+                blockedUserId: selectUs.receiverId,
+            }).then(() => {
+                remove(ref(db, "friendList/" + selectUs?.id))
+            })
+        } else {
+            set(push(ref(db, "blockList/")), {
+                blockById: user.uid,
+                blockBy: user.displayName,
+                blockedUser: selectUs.senderName,
+                blockedUserId: selectUs.senderId,
+            }).then(() => {
+                remove(ref(db, "friendList/" + selectUs?.id))
+                dispatch(selectU(null))
+            })
+        }
+    }
+
+
     return (
         <>
             {/* component */}
@@ -57,67 +82,71 @@ const Message = () => {
                 <Sidebar />
                 {/* Main Chat Area */}
                 {
-                    selectUser ? <div className="flex-1">
-                        {/* Chat Header */}
-                        <header className="bg-white p-4 text-gray-700 flex gap-3">
-                            <img
-                                src={selectUser?.photo}
-                                alt="User Avatar"
-                                className="w-8 h-8 rounded-full"
-                            />
-                            <h1 className="text-2xl font-semibold">{selectUser?.name}</h1>
-                        </header>
-                        {/* Chat Messages */}
-                        <div className="h-screen overflow-y-auto p-4 pb-36">
-                            {
-                                msgList.map(item => (
-                                    item.senderId == user.uid
-                                        ?
-                                        <div className="flex justify-end mb-4 cursor-pointer">
-                                            <div className="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
-                                                <p>
-                                                    {item.msg}
-                                                </p>
+                    selectUser ?
+                        <div className="flex-1">
+                            {/* Chat Header */}
+                            <header className="flex justify-between mr-20 mt-3">
+                                <div className="bg-white p-4 text-gray-700 flex gap-3">
+                                    <img
+                                        src={selectUser?.photo}
+                                        alt="User Avatar"
+                                        className="w-8 h-8 rounded-full"
+                                    />
+                                    <h1 className="text-2xl font-semibold">{selectUser?.name}</h1>
+                                </div>
+                                <button onClick={handleBlock} className='bg-red-500/80 hover:bg-red-700 text-white font-bold px-4 rounded cursor-pointer duration-200'>Block</button>
+                            </header>
+                            {/* Chat Messages */}
+                            <div className="h-screen overflow-y-auto p-4 pb-36">
+                                {
+                                    msgList.map(item => (
+                                        item.senderId == user.uid
+                                            ?
+                                            <div className="flex justify-end mb-4 cursor-pointer">
+                                                <div className="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+                                                    <p>
+                                                        {item.msg}
+                                                    </p>
+                                                </div>
+                                                <div className="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+                                                    <img
+                                                        src={item?.senderPhoto}
+                                                        alt="My Avatar"
+                                                        className="w-8 h-8 rounded-full"
+                                                    />
+                                                </div>
                                             </div>
-                                            <div className="w-9 h-9 rounded-full flex items-center justify-center ml-2">
-                                                <img
-                                                    src={item?.senderPhoto}
-                                                    alt="My Avatar"
-                                                    className="w-8 h-8 rounded-full"
-                                                />
+                                            :
+                                            <div className="flex mb-4 cursor-pointer">
+                                                <div className="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+                                                    <img
+                                                        src={item?.receiverPhoto}
+                                                        alt="User Avatar"
+                                                        className="w-8 h-8 rounded-full"
+                                                    />
+                                                </div>
+                                                <div className="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+                                                    <p className="text-gray-700">{item.msg}</p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        :
-                                        <div className="flex mb-4 cursor-pointer">
-                                            <div className="w-9 h-9 rounded-full flex items-center justify-center mr-2">
-                                                <img
-                                                    src={item?.receiverPhoto}
-                                                    alt="User Avatar"
-                                                    className="w-8 h-8 rounded-full"
-                                                />
-                                            </div>
-                                            <div className="flex max-w-96 bg-white rounded-lg p-3 gap-3">
-                                                <p className="text-gray-700">{item.msg}</p>
-                                            </div>
-                                        </div>
-                                ))
-                            }
-                        </div>
-                        {/* Chat Input */}
-                        <footer className="bg-white border-t border-gray-300 p-4 absolute bottom-16 w-3/4">
-                            <div className="flex items-center">
-                                <input
-                                    onChange={handleText}
-                                    type="text"
-                                    placeholder="Type a message..."
-                                    className="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"
-                                />
-                                <button onClick={handleSentMsg} className="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2">
-                                    Send
-                                </button>
+                                    ))
+                                }
                             </div>
-                        </footer>
-                    </div>
+                            {/* Chat Input */}
+                            <footer className="bg-white border-t border-gray-300 p-4 absolute bottom-16 w-3/4">
+                                <div className="flex items-center">
+                                    <input
+                                        onChange={handleText}
+                                        type="text"
+                                        placeholder="Type a message..."
+                                        className="w-full p-2 rounded-md border border-gray-400 focus:outline-none focus:border-blue-500"
+                                    />
+                                    <button onClick={handleSentMsg} className="bg-indigo-500 text-white px-4 py-2 rounded-md ml-2">
+                                        Send
+                                    </button>
+                                </div>
+                            </footer>
+                        </div>
                         :
                         <div className='flex flex-col justify-center items-center w-full'>
                             <img className='rounded mb-3' src={img} alt="" />

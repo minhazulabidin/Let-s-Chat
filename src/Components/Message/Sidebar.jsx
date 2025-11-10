@@ -2,6 +2,7 @@ import { getDatabase, onValue, ref } from 'firebase/database';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectUser } from '../../Slices/messageSlice';
+import { selectU } from '../../Slices/selectUser';
 
 const Sidebar = () => {
     const [friend, setFriend] = useState([])
@@ -18,18 +19,22 @@ const Sidebar = () => {
             const array = [];
             snapshot.forEach(item => {
                 if (user?.uid == item.val().senderId || user.uid == item.val().receiverId) {
-                    array.push({ ...item.val(), id: item?.id })
+                    array.push({ ...item.val(), id: item.key})
                 }
             })
             setFriend(array)
         })
     }, [])
 
+
+
     const handleSelect = item => {
         if (user.uid == item.senderId) {
             dispatch(selectUser({ name: item.receiverName, email: item.receiverEmail, id: item.receiverId, photo: item.receiverPhoto }))
+            dispatch(selectU({ ...item }))
         } else {
             dispatch(selectUser({ name: item.senderName, email: item.senderEmail, id: item.senderId, photo: item.senderPhoto }))
+            dispatch(selectU({ ...item }))
         }
     }
 

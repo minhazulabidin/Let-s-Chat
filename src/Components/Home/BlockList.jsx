@@ -1,0 +1,88 @@
+import { getDatabase, onValue, push, ref, remove, set } from "firebase/database";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import AnimatedList from "../../../Components/ReactBits/AnimatedList/AnimatedList";
+import Loading from "../Utilitis/Loading";
+
+const BlockList = () => {
+    const [block, setblock] = useState([]);
+    const [loading, setLoading] = useState(false)
+    const db = getDatabase();
+    const user = useSelector((state) => state?.userSlice?.user);
+
+    useEffect(() => {
+        setLoading(true)
+        const blocktRef = ref(db, "blockList/");
+        onValue(blocktRef, (snapshot) => {
+            const array = [];
+            snapshot.forEach((blockSnap) => {
+                const req = blockSnap.val();
+                if (req.blockById === user?.uid) {
+                    array.push({ ...req, id: blockSnap.key });
+                }
+            });
+            setblock(array);
+            setLoading(false)
+        });
+    }, [db, user?.uid]);
+
+    const handleUnBlock = item => {
+        remove(ref(db, "blockList/" + item?.id))
+    }
+
+    return (
+        <div className="w-sm h-[350px] rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100">
+                <h2 className="text-lg font-semibold text-gray-900">Block List</h2>
+            </div>
+
+            <div className="overflow-y-auto max-h-[350px] pb-18">
+
+                {
+                    loading ? <Loading /> :
+                        <AnimatedList
+                            items={block}
+                            showGradients={true}
+                            enableArrowNavigation={true}
+                            displayScrollbar={true}
+                            renderItem={(item) => (
+                                <div
+                                    key={item.id}
+                                    className="flex items-center justify-between gap-x-4 px-5 py-4 border-b border-gray-100 hover:bg-gray-50 transition-all duration-150"
+                                >
+                                    <div className="flex items-center gap-x-4">
+                                        <img
+                                            src={
+                                                item?.senderPhoto ||
+                                                "https://picsum.photos/seed/picsum/200/300"
+                                            }
+                                            alt={item?.senderName}
+                                            className="h-10 w-10 rounded-full object-cover ring-1 ring-gray-200"
+                                        />
+                                        <div className="min-w-0">
+                                            <p className="truncate text-lg text-gray-700 font-medium">
+                                                {item?.blockedUser}
+                                            </p>
+                                            <p className="truncate text-xs text-gray-500">
+                                                {item?.senderEmail}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => handleUnBlock(item)}
+                                        className="bg-teal-600 cursor-pointer text-white px-5 py-2 rounded-lg hover:bg-teal-700 transition-all duration-200"
+                                    >
+                                        UnBlock
+                                    </button>
+                                </div>
+                            )}
+                        />
+                }
+
+            </div>
+        </div>
+    );
+};
+
+export default BlockList;
